@@ -1,0 +1,20 @@
+.input {
+    width: 100%;
+    border: none;
+    border-bottom: 2px solid #ee6f57;
+    margin-top: 3rem 0 1rem 0;
+    font-size: 2rem;
+    transition: padding .5s ease;
+
+}
+
+.input:focus {
+    outline: none; 
+    padding: 0.5rem;
+}
+
+.submitBtn {
+    color: white;
+    background: #ee6f57;
+
+}

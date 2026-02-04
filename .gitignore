@@ -1,0 +1,21 @@
+# Ignore all node_modules folders (root and subfolders)
+node_modules/
+client/node_modules/
+
+# Build folders
+build/
+client/build/
+
+# macOS
+.DS_Store
+
+# Env / secrets
+.env*
+*.local
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
