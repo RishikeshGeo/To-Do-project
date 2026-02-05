@@ -1,8 +1,8 @@
-// auth.js
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+require('dotenv').config();
 
-const JWT_SECRET = 'knk40zuoPKMOgGZf1j1sMenhvNZYBDOoq+bzT1ZNk0w=';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // We'll pass users array from data.js via dependency injection
 function setupAuth(users) {

@@ -1,11 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
-const bcrypt = require('bcrypt');
-
 const { todos, users } = require('./data.js');
-
 const setupAuth = require('./auth.js');
+const authenticate = require('./authMiddleware.js');
 
 const app = express();
 
@@ -13,20 +11,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Initialize auth handlers with users array
+// Initialize auth handlers
 const { register, login } = setupAuth(users);
 
 // ────────────────────────────────────────────────
-// GET / - Fetch all todos (public for now)
+// Public routes (no auth needed)
 // ────────────────────────────────────────────────
 app.get('/', (req, res) => {
   res.status(200).json(todos);
 });
 
 // ────────────────────────────────────────────────
-// POST / - Add a new todo
+// Auth routes (registration & login)
 // ────────────────────────────────────────────────
-app.post('/', (req, res) => {
+app.post('/user', register);
+app.post('/login', login);
+
+// ────────────────────────────────────────────────
+// Protected routes – require valid JWT token
+// ────────────────────────────────────────────────
+app.post('/', authenticate, (req, res) => {
   const { message } = req.body;
 
   if (!message || typeof message !== 'string') {
@@ -42,10 +46,7 @@ app.post('/', (req, res) => {
   res.status(201).json(todos);
 });
 
-// ────────────────────────────────────────────────
-// DELETE /:id - Remove a todo by ID
-// ────────────────────────────────────────────────
-app.delete('/:id', (req, res) => {
+app.delete('/:id', authenticate, (req, res) => {
   const { id } = req.params;
 
   const index = todos.findIndex((todo) => String(todo.id) === String(id));
@@ -59,13 +60,7 @@ app.delete('/:id', (req, res) => {
 });
 
 // ────────────────────────────────────────────────
-// Auth routes
-// ────────────────────────────────────────────────
-app.post('/user', register);
-app.post('/login', login);
-
-// ────────────────────────────────────────────────
-// Start server only if this file is run directly
+// Start server only when run directly
 // ────────────────────────────────────────────────
 if (require.main === module) {
   const PORT = 5001;
