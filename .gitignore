@@ -18,4 +18,5 @@ client/build/
 
 # Editor
 .vscode/
-.idea/
+.idea/jestexplanation.txt
+*.txt

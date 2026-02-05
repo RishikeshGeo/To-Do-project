@@ -1,54 +1,72 @@
 const express = require('express');
-const cors = require('cors')
+const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
+const { todos, users } = require('./data.js');
+const setupAuth = require('./auth.js');
+const authenticate = require('./authMiddleware.js');
+
 const app = express();
-app.use(cors())
 
-//post request middleware-
-app.use(express.json({ extended: false })) //allows us to read that data we try to post.
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-const todos = [
-    {
-        message: "wash car",
-        id: 1
-    },
-    {
-        message: "play tennis",
-        id: 2
-    },
-    {
-        message: "make project",
-        id: 3
-    }
-]
+// Initialize auth handlers
+const { register, login } = setupAuth(users);
 
-app.get("/", (req,res) => {
-    res.status(200).json(todos);
+// ────────────────────────────────────────────────
+// Public routes (no auth needed)
+// ────────────────────────────────────────────────
+app.get('/', (req, res) => {
+  res.status(200).json(todos);
 });
 
-app.post("/", (req,res) => {
-    const newTodo = {
-        message: req.body.message,
-        id: uuidv4()
-    }
+// ────────────────────────────────────────────────
+// Auth routes (registration & login)
+// ────────────────────────────────────────────────
+app.post('/user', register);
+app.post('/login', login);
 
-    todos.push(newTodo)
-    res.status(201).json(todos);
+// ────────────────────────────────────────────────
+// Protected routes – require valid JWT token
+// ────────────────────────────────────────────────
+app.post('/', authenticate, (req, res) => {
+  const { message } = req.body;
+
+  if (!message || typeof message !== 'string') {
+    return res.status(400).json({ error: 'Message is required and must be a string' });
+  }
+
+  const newTodo = {
+    message,
+    id: uuidv4(),
+  };
+
+  todos.push(newTodo);
+  res.status(201).json(todos);
 });
 
-app.delete("/:id", (req, res) => {
-    const { id } = req.params;
-    const idx = todos.findIndex((t) => String(t.id) === String(id));
+app.delete('/:id', authenticate, (req, res) => {
+  const { id } = req.params;
 
-    if (idx === -1) {
-        return res.status(404).json({ error: "Todo not found" });
-    }
+  const index = todos.findIndex((todo) => String(todo.id) === String(id));
 
-    todos.splice(idx, 1);
-    return res.status(200).json(todos);
+  if (index === -1) {
+    return res.status(404).json({ error: 'Todo not found' });
+  }
+
+  todos.splice(index, 1);
+  res.status(200).json(todos);
 });
 
-const PORT = 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// ────────────────────────────────────────────────
+// Start server only when run directly
+// ────────────────────────────────────────────────
+if (require.main === module) {
+  const PORT = 5001;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
