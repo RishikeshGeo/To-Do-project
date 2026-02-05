@@ -34,7 +34,11 @@ app.delete("/:id", (req, res) => {
     return res.status(200).json(todos);
 });
 
-const PORT = 5001;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+if (require.main === module) {
+  const PORT = 5001;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
