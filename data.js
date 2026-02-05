@@ -13,4 +13,6 @@ let todos = [
   }
 ];
 
-module.exports = { todos };
+let users = [];
+
+module.exports = { todos,users };
