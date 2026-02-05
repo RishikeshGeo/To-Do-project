@@ -1,0 +1,64 @@
+// auth.js
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+const JWT_SECRET = 'knk40zuoPKMOgGZf1j1sMenhvNZYBDOoq+bzT1ZNk0w=';
+
+// We'll pass users array from data.js via dependency injection
+function setupAuth(users) {
+  // POST /user - Register
+  const register = async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password required' });
+    }
+
+    if (typeof username !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Username and password must be strings' });
+    }
+
+    if (users.find(u => u.username === username)) {
+      return res.status(409).json({ error: 'Username already exists' });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    console.log(`New user created: ${username} | Hashed password: ${hashedPassword}`);
+
+    const newUser = { username, hashedPassword };
+    users.push(newUser);
+
+    res.status(201).json({ message: 'User created successfully', username });
+  };
+
+  // POST /login - Login & generate JWT
+  const login = async (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password required' });
+    }
+
+    const user = users.find(u => u.username === username);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    const match = await bcrypt.compare(password, user.hashedPassword);
+    if (!match) {
+      return res.status(401).json({ error: 'Invalid username or password' });
+    }
+
+    const token = jwt.sign(
+      { username: user.username },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    res.status(200).json({ message: 'Login successful', token });
+  };
+
+  return { register, login };
+}
+
+module.exports = setupAuth;
