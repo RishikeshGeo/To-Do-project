@@ -2,25 +2,11 @@ const express = require('express');
 const cors = require('cors')
 const { v4: uuidv4 } = require('uuid');
 const app = express();
+const { todos } = require('./data.js');
 app.use(cors())
 
 //post request middleware-
 app.use(express.json({ extended: false })) //allows us to read that data we try to post.
-
-const todos = [
-    {
-        message: "wash car",
-        id: 1
-    },
-    {
-        message: "play tennis",
-        id: 2
-    },
-    {
-        message: "make project",
-        id: 3
-    }
-]
 
 app.get("/", (req,res) => {
     res.status(200).json(todos);
