@@ -1,0 +1,64 @@
+// 1. Import the tools we need
+const request = require('supertest');           // Supertest: lets us fake HTTP requests (GET, POST, DELETE)
+const app = require('./server');               // Import your Express app from server.js
+                                               // (this works because you added module.exports = app; at the bottom)
+
+// 2. Describe block: groups related tests together (like a chapter title)
+describe('Todo API Endpoints', () => {
+
+  // 3. A variable we'll reuse to remember how many todos we started with
+  let initialTodosLength;
+
+  // 4. beforeEach: runs BEFORE every single test (automatically)
+  //    Here we fetch the current list so we know the starting number of todos
+  beforeEach(async () => {
+    const res = await request(app).get('/');   // fake GET request to your API
+    initialTodosLength = res.body.length;      // save how many todos exist right now
+  });
+
+  // 5. First test: checks that GET / returns the list correctly
+  test('GET / should return all todos as JSON array', async () => {
+    const res = await request(app).get('/');   // fake GET request
+
+    // Assertions (what we expect to be true)
+    expect(res.statusCode).toBe(200);          // HTTP 200 = OK/success
+    expect(res.body).toBeInstanceOf(Array);    // response body should be an array
+    expect(res.body.length).toBeGreaterThanOrEqual(3); // at least your original 3 items
+    expect(res.body[0]).toHaveProperty('message'); // each todo has "message"
+    expect(res.body[0]).toHaveProperty('id');      // each todo has "id"
+  });
+
+  // 6. Second test: checks that POST / adds a new todo
+  test('POST / should add a new todo and return updated list', async () => {
+    const newTodo = { message: 'Jest test task' };  // what we're sending
+
+    const res = await request(app)               // fake POST request
+      .post('/')                                 // to the root URL
+      .send(newTodo)                             // send JSON body
+      .set('Content-Type', 'application/json');  // tell server it's JSON
+
+    expect(res.statusCode).toBe(201);            // 201 = Created (common for POST)
+    // or use 200 if your POST route returns 200 instead
+
+    expect(res.body).toBeInstanceOf(Array);      // still returns array
+    expect(res.body.length).toBe(initialTodosLength + 1); // one more item now
+    expect(res.body[res.body.length - 1].message).toBe(newTodo.message); // last item matches
+    expect(res.body[res.body.length - 1]).toHaveProperty('id'); // has an ID (uuid)
+  });
+
+  // 7. Third test: checks that DELETE /:id removes a todo
+  test('DELETE /:id should remove a todo and return updated list', async () => {
+    // Step A: Get current list so we know a valid ID to delete
+    const getRes = await request(app).get('/');
+    const todoToDelete = getRes.body[0];         // take the first todo
+    const idToDelete = todoToDelete.id;          // grab its ID
+
+    // Step B: Send DELETE request with that ID in the URL
+    const res = await request(app).delete(`/${idToDelete}`);
+
+    expect(res.statusCode).toBe(200);            // 200 = OK (deleted successfully)
+    expect(res.body).toBeInstanceOf(Array);      // still returns array
+    expect(res.body.length).toBe(initialTodosLength - 1); // one less item
+    expect(res.body.find(t => t.id === idToDelete)).toBeUndefined(); // that ID is gone
+  });
+});

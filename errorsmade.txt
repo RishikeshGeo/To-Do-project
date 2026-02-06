@@ -1,0 +1,30 @@
+Mistakes We Made (and How We Fixed Them)
+From our journey, here are the key issues we encountered and resolved. This is based on the history (e.g., errors like req.body undefined, crashes from missing .env, nested Git repos, etc.) and the current branch code. The code is clean now, but these were learning opportunities.
+
+Nested Git Repo in client/:
+Mistake: Create React App auto-inited a separate Git repo in client/, causing VS Code to show duplicate commit sections and Git to treat client as an embedded repo (not tracking files properly).
+Fix: We deleted client/.git and re-added the folder as normal files. This completed in one of our earlier sessions — branch now tracks client correctly without nesting.
+
+.gitignore Issues (node_modules not ignored):
+Mistake: Initial .gitignore was in client/ or incomplete, leading to Git trying to stage thousands of node_modules files (3k+ changes).
+Fix: Moved .gitignore to root, added node_modules/ and client/node_modules/. We also used git rm -r --cached . + re-add to clean up. Branch now has a proper root .gitignore ignoring .env, logs, etc.
+
+req.body Undefined (500 Errors on POST):
+Mistake: Missing Content-Type: application/json header in Postman + incorrect middleware order or body format, causing Express to not parse JSON → destructuring crash.
+Fix: Added the header in Postman + ensured app.use(express.json()) is early in server.js. We also added debug logs like console.log(req.body). Current code has correct middleware.
+
+JWT_SECRET Hardcoded or Missing:
+Mistake: Hardcoded secret in code (risk of committing to GitHub) + no .env → crashes when referencing process.env.
+Fix: Moved to .env + dotenv. Branch has no hardcoded secrets, and .gitignore ignores .env.
+
+Jest Testing Errors (JSX, CommonJS, UUID Issues):
+Mistake: Jest trying to run frontend tests from root (JSX error) + CommonJS require not parsed + UUID ESM/CommonJS mismatch.
+Fix: Added jest.config.js to ignore client/ + mock UUID in tests + run frontend tests from client/ folder. Branch has passing server.test.js and fixed App.test.js.
+
+Minor Code Typos/Logic Issues:
+Mistake: Typos like HashedPassoword, startswith (should be startsWith), inconsistent status codes, no validation on POST /todos, redundant { extended: false }.
+Fix: Corrected variable names, methods, added validation, simplified json parser. Current branch code is clean, with logs for debugging.
+
+Branch Management:
+Mistake: Working on branch without committing/pushing often, risking lost work.
+Fix: We committed + pushed checkpoints — branch is now 4 ahead of main, with clear history.

@@ -1,22 +1,22 @@
-# Ignore all node_modules folders (root and subfolders)
+# Dependencies
 node_modules/
 client/node_modules/
+server/node_modules/
 
-# Build folders
-build/
+# Environment variables
+.env
+server/.env
+
+# Build
 client/build/
+build/
 
 # macOS
 .DS_Store
-
-# Env / secrets
-.env*
-*.local
 
 # Logs
 *.log
 
 # Editor
 .vscode/
-.idea/jestexplanation.txt
-*.txt
+.idea/

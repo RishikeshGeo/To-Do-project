@@ -1,9 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
-const { todos, users } = require('./data.js');
-const setupAuth = require('./auth.js');
-const authenticate = require('./authMiddleware.js');
+const { todos, users } = require('./data');
+const setupAuth = require('./auth');
+const authenticate = require('./middleware/authMiddleware');
 
 const app = express();
 

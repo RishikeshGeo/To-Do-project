@@ -9,7 +9,7 @@ jest.mock('uuid', () => ({
 }));
 
 const app = require('./server');
-const { todos, users } = require('./data.js');
+const { todos, users } = require('./data');
 
 describe('Todo API Endpoints', () => {
   let authToken;
