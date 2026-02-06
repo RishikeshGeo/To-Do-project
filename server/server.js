@@ -1,26 +1,35 @@
 const express = require('express');
 const cors = require('cors');
 const { v4: uuidv4 } = require('uuid');
-const { todos, users } = require('./data');
-const setupAuth = require('./auth');
+const setupAuth = require('./auth.js');
 const authenticate = require('./middleware/authMiddleware');
+const connectDB = require('./config/db');
+const Todo = require('./models/Todo');  // ← NEW
 
 const app = express();
+
+// Connect to MongoDB
+connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // Initialize auth handlers
-const { register, login } = setupAuth(users);
+const { register, login } = setupAuth();
 
 // ────────────────────────────────────────────────
-// Protected routes – require valid JWT token
+// Public routes (no auth needed)
 // ────────────────────────────────────────────────
-// GET / – return only the authenticated user's todos
-app.get('/', authenticate, (req, res) => {
-  const userTodos = todos.filter((t) => t.userId === req.user.username);
-  res.status(200).json(userTodos);
+app.get('/', authenticate, async (req, res) => {
+  try {
+    // Get only the authenticated user's todos
+    const todos = await Todo.find({ userId: req.user._id });
+    res.status(200).json(todos);
+  } catch (error) {
+    console.error('Error fetching todos:', error);
+    res.status(500).json({ error: 'Server error fetching todos' });
+  }
 });
 
 // ────────────────────────────────────────────────
@@ -29,39 +38,50 @@ app.get('/', authenticate, (req, res) => {
 app.post('/user', register);
 app.post('/login', login);
 
-app.post('/', authenticate, (req, res) => {
+// ────────────────────────────────────────────────
+// Protected routes – require valid JWT token
+// ────────────────────────────────────────────────
+app.post('/', authenticate, async (req, res) => {
   const { message } = req.body;
 
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Message is required and must be a string' });
   }
 
-  const newTodo = {
-    message,
-    id: uuidv4(),
-    userId: req.user.username,
-  };
+  try {
+    const newTodo = await Todo.create({
+      id: uuidv4(),
+      message,
+      userId: req.user._id  // Link to authenticated user
+    });
 
-  todos.push(newTodo);
-  const userTodos = todos.filter((t) => t.userId === req.user.username);
-  res.status(201).json(userTodos);
+    // Return all user's todos
+    const todos = await Todo.find({ userId: req.user._id });
+    res.status(201).json(todos);
+  } catch (error) {
+    console.error('Error creating todo:', error);
+    res.status(500).json({ error: 'Server error creating todo' });
+  }
 });
 
-app.delete('/:id', authenticate, (req, res) => {
+app.delete('/:id', authenticate, async (req, res) => {
   const { id } = req.params;
-  const username = req.user.username;
 
-  const index = todos.findIndex(
-    (todo) => String(todo.id) === String(id) && todo.userId === username
-  );
+  try {
+    // Only delete if it belongs to the authenticated user
+    const result = await Todo.deleteOne({ id, userId: req.user._id });
 
-  if (index === -1) {
-    return res.status(404).json({ error: 'Todo not found' });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Todo not found or unauthorized' });
+    }
+
+    // Return all user's todos
+    const todos = await Todo.find({ userId: req.user._id });
+    res.status(200).json(todos);
+  } catch (error) {
+    console.error('Error deleting todo:', error);
+    res.status(500).json({ error: 'Server error deleting todo' });
   }
-
-  todos.splice(index, 1);
-  const userTodos = todos.filter((t) => t.userId === username);
-  res.status(200).json(userTodos);
 });
 
 // ────────────────────────────────────────────────

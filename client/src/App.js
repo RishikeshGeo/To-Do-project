@@ -22,16 +22,22 @@ function App() {
 
   // Fetch todos when authenticated (user-specific list)
   useEffect(() => {
-    if (isAuthenticated) {
-      const getTodos = async () => {
+    if (!isAuthenticated) return;
+
+    const getTodos = async () => {
+      try {
         const token = localStorage.getItem('token');
         const res = await axios.get("http://localhost:5001", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTodos(res.data);
-      };
-      getTodos();
-    }
+      } catch (err) {
+        if (err.response?.status === 401) {
+          handleLogout();
+        }
+      }
+    };
+    getTodos();
   }, [isAuthenticated]);
 
   const handleLoginSuccess = () => {
