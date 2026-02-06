@@ -20,11 +20,14 @@ function App() {
     }
   }, []);
 
-  // Fetch todos when authenticated
+  // Fetch todos when authenticated (user-specific list)
   useEffect(() => {
     if (isAuthenticated) {
       const getTodos = async () => {
-        const res = await axios.get("http://localhost:5001");
+        const token = localStorage.getItem('token');
+        const res = await axios.get("http://localhost:5001", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setTodos(res.data);
       };
       getTodos();

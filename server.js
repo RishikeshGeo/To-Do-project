@@ -15,10 +15,12 @@ app.use(express.json());
 const { register, login } = setupAuth(users);
 
 // ────────────────────────────────────────────────
-// Public routes (no auth needed)
+// Protected routes – require valid JWT token
 // ────────────────────────────────────────────────
-app.get('/', (req, res) => {
-  res.status(200).json(todos);
+// GET / – return only the authenticated user's todos
+app.get('/', authenticate, (req, res) => {
+  const userTodos = todos.filter((t) => t.userId === req.user.username);
+  res.status(200).json(userTodos);
 });
 
 // ────────────────────────────────────────────────
@@ -27,9 +29,6 @@ app.get('/', (req, res) => {
 app.post('/user', register);
 app.post('/login', login);
 
-// ────────────────────────────────────────────────
-// Protected routes – require valid JWT token
-// ────────────────────────────────────────────────
 app.post('/', authenticate, (req, res) => {
   const { message } = req.body;
 
@@ -40,23 +39,29 @@ app.post('/', authenticate, (req, res) => {
   const newTodo = {
     message,
     id: uuidv4(),
+    userId: req.user.username,
   };
 
   todos.push(newTodo);
-  res.status(201).json(todos);
+  const userTodos = todos.filter((t) => t.userId === req.user.username);
+  res.status(201).json(userTodos);
 });
 
 app.delete('/:id', authenticate, (req, res) => {
   const { id } = req.params;
+  const username = req.user.username;
 
-  const index = todos.findIndex((todo) => String(todo.id) === String(id));
+  const index = todos.findIndex(
+    (todo) => String(todo.id) === String(id) && todo.userId === username
+  );
 
   if (index === -1) {
     return res.status(404).json({ error: 'Todo not found' });
   }
 
   todos.splice(index, 1);
-  res.status(200).json(todos);
+  const userTodos = todos.filter((t) => t.userId === username);
+  res.status(200).json(userTodos);
 });
 
 // ────────────────────────────────────────────────
