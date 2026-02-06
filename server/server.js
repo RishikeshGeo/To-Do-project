@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const setupAuth = require('./auth.js');
 const authenticate = require('./middleware/authMiddleware');
 const connectDB = require('./config/db');
-const Todo = require('./models/Todo');  // ← NEW
+const Todo = require('./models/todo');
 
 const app = express();
 
