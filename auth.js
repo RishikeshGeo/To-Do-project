@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-// We'll pass users array from data.js via dependency injection
+//pass users array from data.js via dependency injection
 function setupAuth(users) {
   // POST /user - Register
   const register = async (req, res) => {
@@ -44,11 +44,13 @@ function setupAuth(users) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
+    //comparing the hashed password with the entered password which is also hashed
     const match = await bcrypt.compare(password, user.hashedPassword);
     if (!match) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
-
+    
+    //if matched then create the jwt token which gives access to the protected methods.
     const token = jwt.sign(
       { username: user.username },
       JWT_SECRET,
