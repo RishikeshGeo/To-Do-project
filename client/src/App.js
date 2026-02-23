@@ -7,9 +7,8 @@ import Input from './components/todoinput';
 import LoginForm from './components/loginform';
 import Sidebar from './components/sidebar';
 import History from './components/history';
+import { API_BASE } from './api';
 import './App.css';
-
-const API_BASE = 'http://localhost:5001';
 
 function App() {
   const [todos, setTodos] = useState(null);

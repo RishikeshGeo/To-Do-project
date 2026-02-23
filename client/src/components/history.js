@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE } from '../api';
 import './history.css';
-
-const API_BASE = 'http://localhost:5001';
 
 const History = ({ token }) => {
   const [history, setHistory] = useState(null);

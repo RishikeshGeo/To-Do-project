@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { API_BASE } from '../api';
 import './loginform.css';
 
 const LoginForm = ({ onLoginSuccess }) => {
@@ -16,7 +17,7 @@ const LoginForm = ({ onLoginSuccess }) => {
 
         try {
             const endpoint = isLogin ? '/login' : '/user';
-            const res = await axios.post(`http://localhost:5001${endpoint}`, {
+            const res = await axios.post(`${API_BASE}${endpoint}`, {
                 username,
                 password
             });
