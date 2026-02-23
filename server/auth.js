@@ -60,11 +60,11 @@ function setupAuth() {
         return res.status(401).json({ error: 'Invalid username or password' });
       }
 
-      // Generate JWT
+      // Generate JWT (valid for 30 days – user stays logged in for a month)
       const token = jwt.sign(
         { username: user.username },
         JWT_SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '30d' }
       );
 
       res.status(200).json({ message: 'Login successful', token });
