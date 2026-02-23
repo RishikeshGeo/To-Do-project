@@ -4,6 +4,18 @@
   box-sizing: border-box;
 }
 
+.App {
+  display: flex;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
 .container {
   max-width: 720px;
   margin: 0 auto;
@@ -11,6 +23,7 @@
 }
 
 .heading {
+  width: 100%;
   text-align: center;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
   margin-top: 24px;
@@ -22,6 +35,14 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.2;
+}
+
+.heading-subtext {
+  width: 100%;
+  text-align: center;
+  font-size: 1rem;
+  color: #64748b;
+  margin-bottom: 18px;
 }
 
 /* Input */
@@ -118,7 +139,7 @@
   background: #e74c3c;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: bold;
 }

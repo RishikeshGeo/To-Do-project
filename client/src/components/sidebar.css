@@ -1,0 +1,65 @@
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: #ffffff;
+  border-right: 1px solid #e6eaf2;
+  padding: 24px 16px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.sidebar-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.sidebar-profile {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e6eaf2;
+  margin-bottom: 20px;
+}
+
+.sidebar-username {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.sidebar-detail {
+  font-size: 0.875rem;
+  color: #64748b;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sidebar-nav-btn {
+  padding: 10px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.sidebar-nav-btn:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.sidebar-nav-btn.active {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 600;
+}
