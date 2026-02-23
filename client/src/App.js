@@ -15,6 +15,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState('home');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Check if user is already logged in on mount
   useEffect(() => {
@@ -127,9 +128,29 @@ function App() {
 
   // Show todo app with sidebar
   const token = localStorage.getItem('token');
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSidebarOpen(false);
+  };
   return (
     <div className="App">
-      <Sidebar user={user} activeTab={activeTab} onTabChange={setActiveTab} />
+      <button
+        type="button"
+        className="hamburger-btn"
+        onClick={() => setSidebarOpen(true)}
+        aria-label="Open menu"
+      >
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+        <span className="hamburger-line" />
+      </button>
+      <Sidebar
+        user={user}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
       <div className="app-main">
         <div className="container">
           <Header />

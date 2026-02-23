@@ -147,3 +147,23 @@
 .edit-overlay-btn.save:hover {
   background: #4338ca;
 }
+
+@media (max-width: 600px) {
+  .todoItem {
+    padding: 12px 14px;
+    margin: 8px 0;
+  }
+
+  .todoItem-content h1 {
+    font-size: 1rem;
+  }
+
+  .todoItem-content p {
+    font-size: 0.85rem;
+  }
+
+  .todoItem-btn {
+    padding: 10px 12px;
+    font-size: 1.2rem;
+  }
+}
