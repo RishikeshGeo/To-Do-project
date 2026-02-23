@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './todoitem.css';
 
-const TodoItem = ({ todo, onRemove, onEdit }) => {
+const TodoItem = ({ todo, taskNumber, onRemove, onEdit }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editValue, setEditValue] = useState(todo.message);
 
@@ -24,7 +24,7 @@ const TodoItem = ({ todo, onRemove, onEdit }) => {
       <div className="todoItem">
         <div className="todoItem-content">
           <h1>{todo.message}</h1>
-          <p>{todo.id}</p>
+          <p>Task {taskNumber}</p>
         </div>
         <div className="todoItem-actions">
           <button
